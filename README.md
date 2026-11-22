@@ -1,3 +1,21 @@
+Aegisub With Actor Buttons
+
+Allows you to assign actor tags to your subtitles quickly by adding editable actor buttons to Aegisub.
+
+<img width="2553" height="857" alt="image" src="https://github.com/user-attachments/assets/42cfc8f3-3732-48d1-a753-4d76217ffe44" />
+
+When a subtitle line is selected, pressing one of the buttons will assign the actor to that line, and automatically select and play the next line. 
+
+<img width="1023" height="590" alt="image" src="https://github.com/user-attachments/assets/157007d3-426d-4ef9-b1b0-678fd900e322" />
+
+Buttons include names and images, and are editable via the "Edit Buttons" button.
+
+Button images can be uploaded via browsing, clipboard, or the current frame cropped.
+
+Includes import/export of actor button presets.
+
+##########################################
+
 # Aegisub
 
 For binaries and general information [see the homepage](http://aegisub.org).
