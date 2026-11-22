@@ -81,6 +81,11 @@ public:
 
 	std::string next_str() { return std::string(next_tok()); }
 	std::string next_str_trim() { return std::string(agi::Trim(next_tok())); }
+	std::string next_rest() {
+		auto tok = next_tok();
+		auto offset = static_cast<size_t>(tok.data() - str.data());
+		return std::string(str.substr(offset));
+	}
 };
 
 void AssDialogue::Parse(std::string const& raw) {
@@ -113,7 +118,7 @@ void AssDialogue::Parse(std::string const& raw) {
 		margin = mid(-9999, boost::lexical_cast<int>(tkn.next_tok()), 99999);
 	Effect = tkn.next_str_trim();
 
-	std::string text{tkn.next_tok().begin(), str.end()};
+	std::string text = tkn.next_rest();
 
 	if (text.size() > 1 && text[0] == '{' && text[1] == '=') {
 		static const boost::regex extradata_test("^\\{(=\\d+)+\\}");

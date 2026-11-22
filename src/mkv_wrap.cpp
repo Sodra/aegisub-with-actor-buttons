@@ -135,7 +135,7 @@ static bool read_subtitles(agi::ProgressSink *ps, MatroskaFile *file, MkvStdIO *
 		if (ps->IsCancelled()) return true;
 		if (frameSize == 0) continue;
 
-		std::string_view readBuf;
+		std::string readBuf;
 
 		if (cs) {
 			cs_NextFrame(cs, filePos, frameSize);
@@ -157,9 +157,9 @@ static bool read_subtitles(agi::ProgressSink *ps, MatroskaFile *file, MkvStdIO *
 					uncompBuf.resize(2 * std::ssize(uncompBuf));
 			} while (res != 0);
 
-			readBuf = std::string_view(&uncompBuf[0], bytesRead);
+			readBuf.assign(uncompBuf.data(), bytesRead);
 		} else {
-			readBuf = std::string_view(input->file.read(filePos, frameSize), frameSize);
+			readBuf.assign(input->file.read(filePos, frameSize), frameSize);
 		}
 
 		// Get start and end times

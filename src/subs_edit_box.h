@@ -29,7 +29,6 @@
 
 #include "tooltip_binding.h"
 
-#include <array>
 #include <boost/container/map.hpp>
 #include <boost/flyweight/flyweight_fwd.hpp>
 #include <list>
@@ -46,16 +45,20 @@ namespace agi { struct Context; }
 namespace agi { class Time; }
 class AssDialogue;
 class AssStyle;
+class ActorPresetButton;
 class SubsTextEditCtrl;
 class TimeEdit;
 class wxButton;
 class wxCheckBox;
+class wxCommandEvent;
 class wxRadioButton;
+class wxScrolledWindow;
 class wxSizer;
 class wxSpinCtrl;
 class wxStyledTextCtrl;
 class wxStyledTextEvent;
 class wxTextCtrl;
+class wxTimerEvent;
 struct AssDialogueBase;
 
 template<class Base> class Placeholder;
@@ -101,7 +104,13 @@ class SubsEditBox final : public wxPanel {
 	wxRadioButton *by_frame;
 	wxTextCtrl *char_count;
 	wxCheckBox *split_box;
+	wxCheckBox *next_line_after_actor_box;
+	wxButton *manage_actor_buttons_button;
+	std::vector<ActorPresetButton *> actor_preset_buttons;
 
+	wxScrolledWindow *actor_button_scroller;
+	wxSizer *actor_button_sizer;
+	wxSizer *actor_button_bar;
 	wxSizer *top_sizer;
 	wxSizer *middle_right_sizer;
 	wxSizer *middle_left_sizer;
@@ -156,6 +165,8 @@ class SubsEditBox final : public wxPanel {
 	void OnEffectChange(wxCommandEvent &);
 	void OnSize(wxSizeEvent &event);
 	void OnSplit(wxCommandEvent&);
+	void OnManageActorButtons(wxCommandEvent &);
+	void OpenActorButtonManager(bool add_new_button);
 	void DoOnSplit(bool show_original);
 
 	void SetPlaceholderCtrl(wxControl *ctrl, wxString const& value);
@@ -185,6 +196,11 @@ class SubsEditBox final : public wxPanel {
 	void OnCommit(int type);
 
 	void UpdateFields(int type, bool repopulate_lists);
+	void UpdateActorButtons();
+	void RebuildActorButtons();
+	void ApplyActorButtonPreset(size_t index);
+	void StartActorAdvancePlayback();
+	void CancelActorAdvancePlayback(bool stop_media = false);
 
 	/// Regenerate a dropdown list with the unique values of a dialogue field
 	void PopulateList(wxComboBox *combo, boost::flyweight<std::string> AssDialogue::*field);

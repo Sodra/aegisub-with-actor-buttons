@@ -374,6 +374,36 @@
 			"CPS Warning Threshold" : 15,
 			"CPS Error Threshold" : 30
 		},
+		"Actor Buttons" : {
+			"Definitions" : "Actor 1\tActor 1\t?user/actor-buttons/1.png\nActor 2\tActor 2\t?user/actor-buttons/2.png\nActor 3\tActor 3\t?user/actor-buttons/3.png\nActor 4\tActor 4\t?user/actor-buttons/4.png\nActor 5\tActor 5\t?user/actor-buttons/5.png",
+			"Next Line After Actor" : false,
+			"Size" : 128,
+			"Button 1" : {
+				"Label" : "Actor 1",
+				"Value" : "Actor 1",
+				"Image" : "?user/actor-buttons/1.png"
+			},
+			"Button 2" : {
+				"Label" : "Actor 2",
+				"Value" : "Actor 2",
+				"Image" : "?user/actor-buttons/2.png"
+			},
+			"Button 3" : {
+				"Label" : "Actor 3",
+				"Value" : "Actor 3",
+				"Image" : "?user/actor-buttons/3.png"
+			},
+			"Button 4" : {
+				"Label" : "Actor 4",
+				"Value" : "Actor 4",
+				"Image" : "?user/actor-buttons/4.png"
+			},
+			"Button 5" : {
+				"Label" : "Actor 5",
+				"Value" : "Actor 5",
+				"Image" : "?user/actor-buttons/5.png"
+			}
+		},
 		"Character Limit" : 40,
 		"Default Resolution" : {
 			"Auto" : true,

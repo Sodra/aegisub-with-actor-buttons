@@ -471,10 +471,13 @@ class AutomationMenu final : public wxMenu {
 		for (auto macro : macros) {
 			const auto name = from_wx(macro->StrMenu(c));
 			WorkItem *parent = &top;
-			for (auto section : agi::Split(name, wxS('/'))) {
+			for (auto it = agi::Split(std::string_view(name), '/'); !it.eof(); ++it) {
+				auto section = *it;
 				std::string sectionname(section.begin(), section.end());
+				auto next = it;
+				++next;
 
-				if (section.end() == std::string_view(name).end()) {
+				if (next.eof()) {
 					parent->subitems.emplace_back(sectionname, macro);
 				}
 				else {
