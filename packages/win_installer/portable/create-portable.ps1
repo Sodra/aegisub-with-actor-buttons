@@ -7,6 +7,8 @@ param (
     [string]$SourceRoot
 )
 
+$ErrorActionPreference = 'Stop'
+
 function Copy-New-Item {
     $SourceFilePath = $args[0]
     $DestinationFilePath = $args[1]
@@ -40,12 +42,13 @@ Set-Location $BuildRoot
 
 
 Write-Output 'Removing old temp dir'
-Remove-Item -LiteralPath "$PortableOutputDir" -Force -Recurse
-Remove-Item -LiteralPath "install" -Force -Recurse
+Remove-Item -LiteralPath "$PortableOutputDir" -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath "install" -Force -Recurse -ErrorAction SilentlyContinue
 
 
 Write-Output 'Make install'
 meson install --no-rebuild --destdir $InstallerDir
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Output 'Gathering files'
 Copy-New-Item $InstallerDir\bin\aegisub.exe  $PortableOutputDir
 
@@ -85,5 +88,6 @@ Copy-New-Item $SourceRoot\packages\win_installer\portable\config.json  $Portable
 
 
 Write-Output 'Creating portable zip'
-Remove-Item aegisub-portable-64.zip
+Remove-Item aegisub-portable-64.zip -ErrorAction SilentlyContinue
 7z a aegisub-portable-64.zip aegisub-portable\
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

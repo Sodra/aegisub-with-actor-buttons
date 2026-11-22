@@ -48,8 +48,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           meson test -C build --verbose 'gtest main'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare Windows packaging dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: meson compile -C build win-installer
       - name: Package Windows portable
         run: meson compile -C build win-portable
+      - name: Verify portable archive
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path 'build/aegisub-portable-64.zip'))
+          try {
+            $names = @($zip.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
+            foreach ($required in @('aegisub-portable/aegisub.exe', 'aegisub-portable/config.json', 'aegisub-portable/dictionaries/en_US.dic', 'aegisub-portable/dictionaries/en_US.aff', 'aegisub-portable/csri/VSFilter.dll', 'aegisub-portable/Microsoft.CRT/VC_redist.x64.exe')) {
+              if ($required -notin $names) { throw "Portable archive is missing $required" }
+            }
+          } finally { $zip.Dispose() }
       - uses: actions/upload-artifact@v6
         with:
           name: Aegisub-actor-buttons-windows-portable
