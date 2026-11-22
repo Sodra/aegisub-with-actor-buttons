@@ -1,10 +1,4 @@
-# Aegisub with Actor Buttons
-
-This personal fork adds configurable actor buttons to Aegisub's subtitle editing interface. It is based on [TypesettingTools/Aegisub](https://github.com/TypesettingTools/Aegisub) commit `5740307dddc5a39df85b5943e921467ea387da2b`.
-
-Windows portable builds are produced by GitHub Actions. Tags beginning with `actor-buttons-v` publish a release after a successful build and tests.
-
-## Upstream Aegisub
+# Aegisub
 
 For binaries and general information [see the homepage](http://aegisub.org).
 
