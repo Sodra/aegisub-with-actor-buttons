@@ -110,5 +110,5 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: Aegisub-actor-buttons-windows-portable
-          path: ${{ env.LOCAL_BUILD_ROOT }}/build/aegisub-portable-64.zip
+          path: ${{ env.LOCAL_BUILD_ROOT }}/build/aegisub-portable/
           if-no-files-found: error
