@@ -10,6 +10,8 @@ jobs:
   windows:
     runs-on: [self-hosted, Windows, X64, aegisub-local]
     env:
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
       GIT_CONFIG_COUNT: '1'
       GIT_CONFIG_KEY_0: core.longpaths
       GIT_CONFIG_VALUE_0: 'true'
