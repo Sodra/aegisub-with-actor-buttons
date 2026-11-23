@@ -1,8 +1,6 @@
 name: Actor Buttons Windows build
 
 on:
-  push:
-    tags: ['actor-buttons-v*']
   workflow_dispatch:
 
 permissions:
