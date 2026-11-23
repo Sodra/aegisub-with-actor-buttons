@@ -4,9 +4,11 @@ param (
   [Parameter(Position = 0)]
   [string]$BuildRoot,
   [Parameter(Position = 1)]
-  [string]$SourceRoot
+  [string]$SourceRoot,
+  [switch]$PortableOnly
 )
 
+$ErrorActionPreference = 'Stop'
 $InstallerDir = Join-Path $SourceRoot "packages\win_installer" | Resolve-Path
 $DepsDir = Join-Path $BuildRoot "installer-deps"
 if (!(Test-Path $DepsDir)) {
@@ -89,6 +91,7 @@ if (!(Test-Path dictionaries)) {
 }
 
 # Installer localization
+if (-not $PortableOnly) {
 if (!(Test-Path innosetup-langs)) {
 	New-Item -ItemType Directory innosetup-langs
 	Invoke-WebRequest https://raw.github.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Greek.isl -OutFile innosetup-langs/Greek.isl -UseBasicParsing
@@ -100,6 +103,7 @@ if (!(Test-Path innosetup-langs)) {
 	Invoke-WebRequest https://raw.github.com/jrsoftware/issrc/main/Files/Languages/Unofficial/ChineseSimplified.isl -OutFile innosetup-langs/ChineseSimplified.isl -UseBasicParsing
 	Invoke-WebRequest https://raw.github.com/jrsoftware/issrc/main/Files/Languages/Unofficial/ChineseTraditional.isl -OutFile innosetup-langs/ChineseTraditional.isl -UseBasicParsing
 }
+}
 
 # Aegisub localization
 Set-Location $BuildRoot
@@ -107,6 +111,7 @@ meson compile aegisub-gmo
 if(!$?) { Exit $LASTEXITCODE }
 
 # Invoke InnoSetup
+if ($PortableOnly) { exit 0 }
 $IssUrl = Join-Path $InstallerDir "aegisub_depctrl.iss"
 iscc $IssUrl
 if(!$?) { Exit $LASTEXITCODE }

@@ -1,0 +1,77 @@
+name: Local Windows portable build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: [self-hosted, Windows, X64, aegisub-local]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install build tools in workspace
+        shell: pwsh
+        run: |
+          python -m venv .ci-venv
+          & .\.ci-venv\Scripts\python.exe -m pip install meson ninja
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Resolve-Path .ci-venv/Scripts).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Install packaging tools in workspace
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Invoke-WebRequest 'https://github.com/leafo/moonscript/releases/download/v0.6.0/moonscript-v0.6.0-windows-x86_64.zip' -OutFile moonscript.zip
+          New-Item -ItemType Directory -Force moonscript | Out-Null
+          7z e moonscript.zip -omoonscript -y
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Resolve-Path moonscript).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Invoke-WebRequest 'https://github.com/mlocati/gettext-iconv-windows/releases/download/v1.0-v1.18-r3/gettext1.0-iconv1.18-static-64.zip' -OutFile gettext.zip
+          Expand-Archive gettext.zip -DestinationPath gettext -Force
+          (Resolve-Path gettext/bin).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Configure
+        run: >-
+          meson setup build --buildtype=release -Ddefault_library=static
+          --force-fallback-for=zlib,harfbuzz,freetype2,fribidi,libpng
+          -Dfallback_nasm=true -Dfreetype2:harfbuzz=disabled
+          -Dharfbuzz:freetype=disabled -Dharfbuzz:cairo=disabled
+          -Dharfbuzz:glib=disabled -Dharfbuzz:gobject=disabled
+          -Dharfbuzz:tests=disabled -Dharfbuzz:docs=disabled
+          -Dfribidi:tests=false -Dfribidi:docs=false -Dlibass:fontconfig=disabled
+      - name: Build and test
+        run: |
+          meson compile -C build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          meson test -C build --verbose 'gtest main'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare portable dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          & ./tools/win-installer-setup.ps1 (Resolve-Path build).Path (Get-Location).Path -PortableOnly
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package portable archive
+        run: meson compile -C build win-portable
+      - name: Verify portable archive
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [IO.Compression.ZipFile]::OpenRead((Resolve-Path 'build/aegisub-portable-64.zip'))
+          try {
+            $names = @($zip.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
+            foreach ($required in @('aegisub-portable/aegisub.exe', 'aegisub-portable/config.json', 'aegisub-portable/dictionaries/en_US.dic', 'aegisub-portable/dictionaries/en_US.aff', 'aegisub-portable/csri/VSFilter.dll', 'aegisub-portable/Microsoft.CRT/VC_redist.x64.exe')) {
+              if ($required -notin $names) { throw "Portable archive is missing $required" }
+            }
+          } finally { $zip.Dispose() }
+      - uses: actions/upload-artifact@v6
+        with:
+          name: Aegisub-actor-buttons-windows-portable
+          path: build/aegisub-portable-64.zip
+          if-no-files-found: error
