@@ -1,4 +1,4 @@
-Aegisub With Actor Buttons
+# Aegisub With Actor Buttons
 
 Allows you to assign actor tags to your subtitles quickly by adding editable actor buttons to Aegisub.
 
@@ -13,6 +13,8 @@ Buttons include names and images, and are editable via the "Edit Buttons" button
 Button images can be uploaded via browsing, clipboard, or the current frame cropped.
 
 Includes import/export of actor button presets.
+
+Download [here](https://github.com/Sodra/aegisub-with-actor-buttons/releases/tag/v1.0.0-actor-buttons)
 
 ##########################################
 
