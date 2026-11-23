@@ -93,4 +93,5 @@ jobs:
       - name: Remove short build path
         if: ${{ always() && env.AEGISUB_DRIVE_CREATED == '1' }}
         shell: pwsh
-        run: subst Q: /D
+        run: |
+          subst Q: /D
